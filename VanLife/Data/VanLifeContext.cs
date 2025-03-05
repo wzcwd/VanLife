@@ -14,11 +14,14 @@ public class VanLifeContext : DbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<Region> Regions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
+        
         // Seeding initial Data
         modelBuilder.Entity<User>().HasData(
             new User
@@ -78,13 +81,26 @@ public class VanLifeContext : DbContext
             new Category { CategoryId = 2, CategoryName = "housing" },
             new Category { CategoryId = 3, CategoryName = "pet" }
         );
+        
+        modelBuilder.Entity<Region>().HasData(
+            new Region { RegionId = 1, Location = "Downtown" },
+            new Region { RegionId = 2, Location = "West Vancouver" },
+            new Region { RegionId = 3, Location = "North Vancouver" },
+            new Region { RegionId = 4, Location = "East Vancouver" },
+            new Region { RegionId = 5, Location = "Burnaby" },
+            new Region { RegionId = 6, Location = "Coquitlam" },
+            new Region { RegionId = 7, Location = "Richmond" },
+            new Region { RegionId = 8, Location = "New Westminster" },
+            new Region { RegionId = 9, Location = "Surrey" }
+        );
+
 
         modelBuilder.Entity<Post>().HasData(
             new Post
             {
                 PostId = 1, UserId = 2, CategoryId = 1, Title = "A part time position in Coquitlam ", Price = 25,
                 CreatedAt = new DateTime(2025, 3, 4), UpdatedAt = new DateTime(2025, 3, 4),
-                Content =
+                RegionId = 6, Content =
                     "Join our team for an exciting part-time opportunity in Coquitlam! Embrace the freedom of " +
                     "van life while contributing to a dynamic, flexible work environment. This position is perfect " +
                     "for those looking to balance work and adventure. "
@@ -93,7 +109,7 @@ public class VanLifeContext : DbContext
             {
                 PostId = 2, UserId = 3, CategoryId = 2, Title = "A room for rent", Price = 1000,
                 CreatedAt = new DateTime(2025, 3, 4), UpdatedAt = new DateTime(2025, 3, 4),
-                Content =
+                RegionId = 1, Content =
                     "Looking for a new place to call home? Rent a cozy room in a beautiful house, perfect for " +
                     "individuals seeking a quiet and peaceful environment. Enjoy the convenience of a fully furnished " +
                     "space, including essential amenities such as high-speed internet, heating, and laundry facilities. " +
@@ -104,7 +120,7 @@ public class VanLifeContext : DbContext
             {
                 PostId = 3, UserId = 4, CategoryId = 3, Title = "The best dog in the world!",
                 CreatedAt = new DateTime(2025, 3, 4), UpdatedAt = new DateTime(2025, 3, 4),
-                Content = "“Meet the best dog in the world! A loyal companion, always by your side, ready for every " +
+                RegionId = 2, Content = "“Meet the best dog in the world! A loyal companion, always by your side, ready for every " +
                           "adventure. Whether you’re hiking, camping, or simply lounging at home, this dog is the perfect" +
                           " friend for any occasion. With their playful spirit and loving nature, they’ll bring joy to your " +
                           "life. Join us in celebrating the best furry friend you could ever ask for!”"

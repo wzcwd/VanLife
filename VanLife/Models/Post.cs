@@ -13,6 +13,8 @@ public class Post
     [Required]  
     public int CategoryId { get; set; }  // foreign key
     
+    public int? RegionId { get; set; }  // foreign key
+    
     [Required]  
     [StringLength(100, ErrorMessage = "Title cannot exceed 100 characters.")]
     public string Title { get; set; }
@@ -32,4 +34,6 @@ public class Post
     public ICollection<Image> Images { get; set; } = new List<Image>();
     // one post for one user
     public User User { get; set; }
+    // one post for one region
+    public Region Region { get; set; }  
 }
