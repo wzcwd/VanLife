@@ -20,6 +20,7 @@ public class VanLifeContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Make email unique
         modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
         
         // Seeding initial Data

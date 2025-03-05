@@ -8,10 +8,10 @@ public class Comment
     public int CommentId { get; set; }  
     
     [Required]
-    public int PostId { get; set; }  
+    public int PostId { get; set; }  // foreign key
     
     [Required]
-    public int UserId { get; set; }  
+    public int UserId { get; set; }  // foreign key
     
     [Required]  
     [StringLength(100, ErrorMessage = "Content cannot exceed 100 characters.")]
