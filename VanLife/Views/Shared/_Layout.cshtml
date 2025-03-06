@@ -13,67 +13,72 @@
 </head>
 
 <body>
-<header>
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">VanLife</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Housing</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">Job</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">Pet World</a>
-                    </li>
-                </ul>
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit" style="display: none;">Search</button>
-                </form>
-                <div class="text-end">
-                    <div class="dropdown">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <!-- Login show username -->
-                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userMenu"
-                                    data-bs-toggle="dropdown" aria-expanded="false"> @User.Identity.Name
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                                <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">Profile</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="@Url.Action("Logout", "Account")">Logout</a></li>
-                            </ul>
-                        }
-                        else
-                        {
-                            <!-- not login，shown Login-->
-                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="guestMenu"
-                                    data-bs-toggle="dropdown" aria-expanded="false"> Login
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="guestMenu">
-                                <li><a class="dropdown-item" href="@Url.Action("Login", "Account")">Sign In</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Register", "Account")">Register</a></li>
-                            </ul>
-                        }
-                    </div>
-                </div>
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">VanLife</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-4 mb-md-0">
+                <li class="nav-item">
+                    <a asp-action="Index" asp-controller="Home"
+                       class="nav-link @(ViewData["ActivePage"]?.ToString() == "Home" ? "active" : "")">Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a asp-action="ListAll" asp-controller="Housing"
+                       class="nav-link @(ViewData["ActivePage"]?.ToString() == "Housing" ? "active" : "")">Housing
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">Job</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">Pet World</a>
+                </li>
+            </ul>
+            <div class="dropdown me-5">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <!-- Login show username -->
+                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="userMenu"
+                            data-bs-toggle="dropdown" aria-expanded="false"> @User.Identity.Name
+                    </button>
+                    <ul class="dropdown-menu " aria-labelledby="userMenu">
+                        <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">Profile</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="@Url.Action("Logout", "Account")">Logout</a></li>
+                    </ul>
+                }
+                else
+                {
+                    <!-- If not login，shown Login-->
+                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="guestMenu"
+                            data-bs-toggle="dropdown" aria-expanded="false"> Login
+                    </button>
+                    <ul class="dropdown-menu " aria-labelledby="guestMenu">
+                        <li><a class="dropdown-item" href="@Url.Action("Login", "Account")">Sign In</a></li>
+                        <li><a class="dropdown-item" href="@Url.Action("Register", "Account")">Register</a></li>
+                    </ul>
+                }
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
+<header class="py-3 mt-5 border-bottom fixed-top bg-white ">
+    <div class="container d-flex align-items-center ">
+    <span class="text-dark text-nowrap fs-4 ">
+        Enjoy Your Life in Vancouver
+    </span>
+        <form class="w-50 ms-3">
+            <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+        </form>
+    </div>
 </header>
-
 
 <div class="container">
     <main role="main" class="pb-3">

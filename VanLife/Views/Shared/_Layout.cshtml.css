@@ -18,3 +18,16 @@ body {
   padding-top: 4.5rem;
 }
 
+main {
+  margin-top: 130px;
+}
+
+header {
+  z-index: 10;
+  top: 0.5rem;
+}
+
+nav .dropdown {
+  z-index: 30; 
+}
+
