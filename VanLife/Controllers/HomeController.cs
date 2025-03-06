@@ -1,17 +1,12 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using VanLife.Data;
 using VanLife.Models;
 
 namespace VanLife.Controllers;
 
-public class HomeController : Controller
+public class HomeController(ILogger<HomeController> logger, VanLifeContext context) : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
 
     public IActionResult Index()
     {
@@ -19,8 +14,7 @@ public class HomeController : Controller
         return View();
     }
 
-
-
+    
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

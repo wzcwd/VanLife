@@ -24,7 +24,7 @@
                                 @post.Title
                             </a>
                         </h7>
-                        <p class="card-text">Price: $@post.Price /Month</p>
+                        <p class="card-text">Price: $@Convert.ToInt32(post.Price)/Month</p>
                         <p class="card-text text-muted">Last Updated: @post.UpdatedAt.ToString("yyyy-MM-dd")</p>
                     </div>
                 </div>
