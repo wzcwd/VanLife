@@ -6,12 +6,31 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="SavePost" method="post" input type="hidden" asp-for="UserId">
+<form asp-action="SavePost" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="All" class="text-danger"></div>
-
+@*TODO: only for test, make value =1 *@
+    <input type="hidden" asp-for="Post.UserId" value="1"/>
+    <input type="hidden" asp-for="Post.PostId"/>
+    
     <div class="form-group">
         <label asp-for="Post.Title">Title</label>
         <input asp-for="Post.Title" class="form-control" required/>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Post.CategoryId">Category</label>
+        <select asp-for="Post.CategoryId" class="form-control"
+                asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))" required>
+            <option value="">Please choose a category</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Post.RegionId">Location</label>
+        <select asp-for="Post.RegionId" class="form-control"
+                asp-items="@(new SelectList(Model.Regions, "RegionId", "Location"))" required>
+            <option value="">Please choose a location</option>
+        </select>
     </div>
 
     <div class="form-group">
@@ -24,25 +43,18 @@
         <input asp-for="Post.Price" type="number" step="0.01" class="form-control"/>
     </div>
 
+    <!-- upload images -->
     <div class="form-group">
-        <label asp-for="Post.CategoryId">Category</label>
-        <select asp-for="Post.CategoryId" class="form-control"
-                asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))" required>
-            <option value="">Please choose a category</option>
-        </select>
+        <label for="imageUpload" class="form-label">Upload Image(Maximum 3 images)</label>
+        <input type="file" class="form-control" id="imageUpload" name="images" multiple accept="image/*"/>
+        <small class="form-text text-muted">Hold down Command (⌘) to select multiple files on MacOS.</small>
     </div>
-
-    <div class="form-group">
-        <label asp-for="Post.Region">Location</label>
-        <select asp-for="Post.Region" class="form-control"
-                asp-items="@(new SelectList(Model.Regions, "RegionId", "Location"))" required>
-            <option value="">Please choose a location</option>
-        </select>
-    </div>
-
-    <input type="hidden" asp-for="Post.PostId"/>
-
-  
+    
+    @*<div>
+        <h4>Uploaded Image</h4>
+        <img src="@Url.Content(Model.ImagePath)" alt="Uploaded Image" class="img-fluid" />
+    </div>*@
+    
     <div class="d-flex mt-3">
         <button type="submit" class="btn btn-primary me-2" onclick="return confirm('Are you sure to submit ?')">Submit
         </button>

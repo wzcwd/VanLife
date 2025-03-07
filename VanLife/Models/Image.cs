@@ -11,7 +11,9 @@ public class Image
     public int PostId { get; set; }  // foreign key 
     
     [Required] 
-    public string ImageString { get; set; }  
+    public string ImageString { get; set; }  // Base64 encoded image string
+    
+    public string ContentType { get; set; } 
 
     // one image for one post
     public Post Post { get; set; }

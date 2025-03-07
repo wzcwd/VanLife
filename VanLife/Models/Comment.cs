@@ -20,8 +20,8 @@ public class Comment
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     // one comment to one post
-    public Post Post { get; set; }
+    public Post? Post { get; set; }
 
     // one comment to one user
-    public User User { get; set; }
+    public User? User { get; set; }
 }

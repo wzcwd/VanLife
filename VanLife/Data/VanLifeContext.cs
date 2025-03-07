@@ -129,9 +129,9 @@ public class VanLifeContext : DbContext
         );
 
         modelBuilder.Entity<Image>().HasData(
-            new Image { ImageId = 1, PostId = 1, ImageString = "image1.jpg" },
-            new Image { ImageId = 2, PostId = 2, ImageString = "image2.jpg" },
-            new Image { ImageId = 3, PostId = 3, ImageString = "image3.jpg" }
+            new Image { ImageId = 1, PostId = 1, ImageString = "image1.jpg", ContentType = "png"},
+            new Image { ImageId = 2, PostId = 2, ImageString = "image2.jpg", ContentType = "png"},
+            new Image { ImageId = 3, PostId = 3, ImageString = "image3.jpg", ContentType = "png"}
         );
 
         modelBuilder.Entity<Comment>().HasData(

@@ -111,6 +111,10 @@ namespace VanLife.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ImageString")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -128,18 +132,21 @@ namespace VanLife.Migrations
                         new
                         {
                             ImageId = 1,
+                            ContentType = "png",
                             ImageString = "image1.jpg",
                             PostId = 1
                         },
                         new
                         {
                             ImageId = 2,
+                            ContentType = "png",
                             ImageString = "image2.jpg",
                             PostId = 2
                         },
                         new
                         {
                             ImageId = 3,
+                            ContentType = "png",
                             ImageString = "image3.jpg",
                             PostId = 3
                         });

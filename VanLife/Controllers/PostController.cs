@@ -5,7 +5,7 @@ using VanLife.Models.ViewModel;
 
 namespace VanLife.Controllers;
 
-public class PostController( ILogger<PostController> logger, VanLifeContext context): Controller
+public class PostController(ILogger<PostController> logger, VanLifeContext context) : Controller
 {
     public IActionResult SavePost()
     {
@@ -20,24 +20,37 @@ public class PostController( ILogger<PostController> logger, VanLifeContext cont
         };
         return View("PostForm", postViewModel);
     }
-    
+
     [HttpPost]
-    public IActionResult SavePost(Post post)
+    public IActionResult SavePost(PostViewModel postViewModel, List<IFormFile> images)
     {
         if (!ModelState.IsValid)
         {
-            // 如果模型验证失败，返回到表单视图，并携带现有数据
-            return View("PostForm");
+            postViewModel.Categories = context.Categories.ToList();
+            postViewModel.Regions = context.Regions.ToList();
+            return View("PostForm", postViewModel);
         }
-
-        // 检查是否为新帖子（PostId 是否为 0）
-        if (post.PostId == 0)
+        
+        // maximum number pf image is 3
+        if (images.Count > 3)
+        {
+            ModelState.AddModelError("Images", "Exceed the maximum number of images");
+            postViewModel.Categories = context.Categories.ToList();
+            postViewModel.Regions = context.Regions.ToList();
+            return View("PostForm", postViewModel);
+        }
+        
+        var post = postViewModel.Post;
+        // start transaction
+        using var transaction = context.Database.BeginTransaction();
+        
+        if (post.PostId == 0) // new post
         {
             context.Posts.Add(post);
         }
         else
         {
-            // 更新现有帖子
+            // edit post
             var existingPost = context.Posts.Find(post.PostId);
             if (existingPost == null)
             {
@@ -49,17 +62,34 @@ public class PostController( ILogger<PostController> logger, VanLifeContext cont
             existingPost.Price = post.Price;
             existingPost.CategoryId = post.CategoryId;
             existingPost.RegionId = post.RegionId;
-            existingPost.UpdatedAt = DateTime.Now;
         }
+        context.SaveChanges(); 
+        
+        // deal with images
+        foreach (var image in images)
+        {
+            logger.LogInformation("Processing image: {ImageName}, Size: {ImageSize} bytes", image.FileName, image.Length);
+            if (image.Length > 0)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    image.CopyTo(memoryStream);  
+                    var base64String = Convert.ToBase64String(memoryStream.ToArray());
 
-        context.SaveChanges(); // 保存更改
-        return RedirectToAction("Index"); // 保存后重定向到帖子列表
+                    // create image 
+                    post.Images.Add(new Image 
+                    { 
+                        ImageString = base64String,
+                        ContentType = image.ContentType,
+                        PostId = post.PostId 
+                    });
+                }
+            }
+        }
+        context.SaveChanges(); 
+        // commit transaction
+        transaction.Commit(); 
+        
+        return RedirectToAction("Index", "Home");
     }
-
-
-
-
-
-
-
 }

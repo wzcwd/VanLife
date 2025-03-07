@@ -33,7 +33,7 @@ public class Post
     // one post to many images
     public ICollection<Image> Images { get; set; } = new List<Image>();
     // one post for one user
-    public User User { get; set; }
+    public User? User { get; set; }
     // one post for one region
-    public Region Region { get; set; }  
+    public Region? Region { get; set; }  
 }
