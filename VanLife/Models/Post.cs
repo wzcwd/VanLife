@@ -7,8 +7,8 @@ public class Post
     [Key]
     public int PostId { get; set; }  
     
-    [Required]
-    public int UserId { get; set; }  // foreign key
+    [Required]  
+    public string UserId { get; set; }  // foreign key to Identity User
     
     [Required]  
     public int CategoryId { get; set; }  // foreign key

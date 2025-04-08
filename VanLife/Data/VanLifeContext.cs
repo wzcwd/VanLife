@@ -1,15 +1,15 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using VanLife.Models;
 
 namespace VanLife.Data;
 
-public class VanLifeContext : DbContext
+public class VanLifeContext : IdentityDbContext<User>
 {
     public VanLifeContext(DbContextOptions<VanLifeContext> options) : base(options)
-    {
-    }
-
-    public DbSet<User> Users { get; set; }
+    { }
+    
     public DbSet<Category> Categories { get; set; }
     public DbSet<Post> Posts { get; set; }
     public DbSet<Comment> Comments { get; set; }
@@ -19,64 +19,8 @@ public class VanLifeContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // Make email unique
-        modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
         
         // Seeding initial Data
-        modelBuilder.Entity<User>().HasData(
-            new User
-            {
-                UserId = 1, UserName = "admin", Email = "admin@example.com", Password = "Admin123", IsAdmin = true,
-                CreatedAt = new DateTime(2025, 3, 4)
-            },
-            new User
-            {
-                UserId = 2, UserName = "user1", Email = "user1@example.com", Password = "User123",
-                CreatedAt = new DateTime(2025, 3, 4)
-            },
-            new User
-            {
-                UserId = 3, UserName = "user2", Email = "user2@example.com", Password = "User123",
-                CreatedAt = new DateTime(2025, 3, 4)
-            },
-            new User
-            {
-                UserId = 4, UserName = "user3", Email = "user3@example.com", Password = "User123",
-                CreatedAt = new DateTime(2025, 3, 4)
-            },
-            new User
-            {
-                UserId = 5, UserName = "user4", Email = "user4@example.com", Password = "User123",
-                CreatedAt = new DateTime(2025, 3, 4)
-            },
-            new User
-            {
-                UserId = 6, UserName = "user5", Email = "user5@example.com", Password = "User123",
-                CreatedAt = new DateTime(2025, 3, 4)
-            },
-            new User
-            {
-                UserId = 7, UserName = "user6", Email = "user6@example.com", Password = "User123",
-                CreatedAt = new DateTime(2025, 3, 4)
-            },
-            new User
-            {
-                UserId = 8, UserName = "user7", Email = "user7@example.com", Password = "User123",
-                CreatedAt = new DateTime(2025, 3, 4)
-            },
-            new User
-            {
-                UserId = 9, UserName = "user8", Email = "user8@example.com", Password = "User123",
-                CreatedAt = new DateTime(2025, 3, 4)
-            },
-            new User
-            {
-                UserId = 10, UserName = "user9", Email = "user9@example.com", Password = "User123",
-                CreatedAt = new DateTime(2025, 3, 4)
-            }
-        );
-
         modelBuilder.Entity<Category>().HasData(
             new Category { CategoryId = 1, CategoryName = "job" },
             new Category { CategoryId = 2, CategoryName = "housing" },
@@ -94,12 +38,11 @@ public class VanLifeContext : DbContext
             new Region { RegionId = 8, Location = "New Westminster" },
             new Region { RegionId = 9, Location = "Surrey" }
         );
-
-
+        
         modelBuilder.Entity<Post>().HasData(
             new Post
             {
-                PostId = 1, UserId = 2, CategoryId = 1, Title = "A part time position in Coquitlam ", Price = 25,
+                PostId = 1, UserId = "64117936-776e-4710-b9e5-f2888573773e", CategoryId = 1, Title = "A part time position in Coquitlam ", Price = 25,
                 CreatedAt = new DateTime(2025, 3, 4), UpdatedAt = new DateTime(2025, 3, 4),
                 RegionId = 6, Content =
                     "Join our team for an exciting part-time opportunity in Coquitlam! Embrace the freedom of " +
@@ -108,7 +51,7 @@ public class VanLifeContext : DbContext
             },
             new Post
             {
-                PostId = 2, UserId = 3, CategoryId = 2, Title = "A room for rent", Price = 1000,
+                PostId = 2, UserId = "64117936-776e-4710-b9e5-f2888573773e", CategoryId = 2, Title = "A room for rent", Price = 1000,
                 CreatedAt = new DateTime(2025, 3, 4), UpdatedAt = new DateTime(2025, 3, 4),
                 RegionId = 1, Content =
                     "Looking for a new place to call home? Rent a cozy room in a beautiful house, perfect for " +
@@ -119,7 +62,7 @@ public class VanLifeContext : DbContext
             },
             new Post
             {
-                PostId = 3, UserId = 4, CategoryId = 3, Title = "The best dog in the world!",
+                PostId = 3, UserId = "64117936-776e-4710-b9e5-f2888573773e", CategoryId = 3, Title = "The best dog in the world!",
                 CreatedAt = new DateTime(2025, 3, 4), UpdatedAt = new DateTime(2025, 3, 4),
                 RegionId = 2, Content = "“Meet the best dog in the world! A loyal companion, always by your side, ready for every " +
                           "adventure. Whether you’re hiking, camping, or simply lounging at home, this dog is the perfect" +
@@ -127,6 +70,7 @@ public class VanLifeContext : DbContext
                           "life. Join us in celebrating the best furry friend you could ever ask for!”"
             }
         );
+        
 
         modelBuilder.Entity<Image>().HasData(
             new Image { ImageId = 1, PostId = 1, ImageString = "image1.jpg", ContentType = "png"},
@@ -137,19 +81,55 @@ public class VanLifeContext : DbContext
         modelBuilder.Entity<Comment>().HasData(
             new Comment
             {
-                CommentId = 1, PostId = 1, UserId = 2, CreatedAt = new DateTime(2025, 3, 4),
+                CommentId = 1, PostId = 1, UserId ="64117936-776e-4710-b9e5-f2888573773e", CreatedAt = new DateTime(2025, 3, 4),
                 CommentContent = "Is it still available? I need this job!"
             },
             new Comment
             {
-                CommentId = 2, PostId = 2, UserId = 3, CreatedAt = new DateTime(2025, 3, 4),
+                CommentId = 2, PostId = 2, UserId = "64117936-776e-4710-b9e5-f2888573773e", CreatedAt = new DateTime(2025, 3, 4),
                 CommentContent = "Is it still available? I like the house!"
             },
             new Comment
             {
-                CommentId = 3, PostId = 3, UserId = 4, CreatedAt = new DateTime(2025, 3, 4),
+                CommentId = 3, PostId = 3, UserId = "64117936-776e-4710-b9e5-f2888573773e", CreatedAt = new DateTime(2025, 3, 4),
                 CommentContent = "Cute dog !"
             }
         );
+        
     }
+    
+    
+    public static async Task CreateUser(IServiceProvider serviceProvider)
+    {
+        UserManager<User> userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+        RoleManager<IdentityRole> roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        String username = "admin";
+        String password = "Aa123456";
+        String rolename = "Admin";
+        String email = "admin@example.com";
+
+        if (await roleManager.FindByNameAsync(rolename) == null)
+        {
+            await roleManager.CreateAsync(new IdentityRole(rolename));
+        }
+
+        if (await userManager.FindByNameAsync(username) == null)
+        {
+            User user = new User()
+            {
+                UserName = username,
+                Email = email,
+                EmailConfirmed = true,
+            };
+            IdentityResult result = await userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, rolename);
+            }
+        }
+    }
+    
+    
+    
+    
 }

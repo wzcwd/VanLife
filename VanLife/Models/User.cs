@@ -1,33 +1,10 @@
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace VanLife.Models;
 
-public class User
+public class User:IdentityUser
 {
-    [Key]
-    public int UserId { get; set; } 
-    
-    [Required(ErrorMessage = "User name is required")]
-    [StringLength(20, ErrorMessage = "Exceed the maximum length")]
-    public string UserName { get; set; }
-    
-    [Required(ErrorMessage = "Email is required")]
-    [EmailAddress(ErrorMessage = "Invalid Email format")] 
-    public string Email { get; set; }
-    
-    [Required(ErrorMessage = "Password is required")]
-    [DataType(DataType.Password)] 
-    [MinLength(6)] 
-    public string Password { get; set; }
-    
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
-    
-    // Set the user to be Admin
-    public bool IsAdmin { get; set; } = false;  
-
-    // one user for many posts 
-    public ICollection<Post> Posts { get; set; }  = new List<Post>();
-
-    // one user for many comments
-    public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+    [NotMapped] // do not create role name in User table
+    public IList<string>? RoleNames { get; set; } = new List<string>();
 }

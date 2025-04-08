@@ -11,7 +11,7 @@ public class Comment
     public int PostId { get; set; }  // foreign key
     
     [Required]
-    public int UserId { get; set; }  // foreign key
+    public string UserId { get; set; }  // foreign key
     
     [Required]  
     [StringLength(100, ErrorMessage = "Content cannot exceed 100 characters.")]
