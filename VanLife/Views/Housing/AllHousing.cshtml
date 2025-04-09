@@ -46,3 +46,9 @@
         @Html.PagedListPager(Model, page => Url.Action("ListAll", new { page }))
     </div>
 </div>
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

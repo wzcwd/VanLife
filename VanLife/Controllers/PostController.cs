@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VanLife.Data;
 using VanLife.Models;
@@ -7,6 +8,7 @@ namespace VanLife.Controllers;
 
 public class PostController(ILogger<PostController> logger, VanLifeContext context) : Controller
 {
+    [Authorize]
     public IActionResult SavePost()
     {
         logger.LogInformation("SavePost: go to PostForm");
