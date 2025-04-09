@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VanLife.Data;
 using VanLife.Models;
+using VanLife.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +30,31 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     }).AddEntityFrameworkStores<VanLifeContext>()
     .AddDefaultTokenProviders();
 
+// add third-party authentication service
+builder.Services.AddAuthentication()
+    .AddGoogle(googleOptions =>
+    {
+        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+        googleOptions.AccessDeniedPath  = "/Account/Login";
+    });
+
+builder.Services.AddAuthentication()
+    .AddFacebook(facebookOptions =>
+    {
+        facebookOptions.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
+        facebookOptions.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
+        facebookOptions.AccessDeniedPath = "/Account/Login";
+    });
+
+
+// enable Session for verification code
+builder.Services.AddSession(); 
+
+// add email service
+builder.Services.AddScoped<SendGridEmailSender>();
+
+
 
 // enable runtime compilation for development stage
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
@@ -43,15 +69,26 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    // only for test
+    app.UseExceptionHandler("/Home/Error");
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
+// deal with http status code
+app.UseStatusCodePagesWithReExecute ("/Home/HandleStatusCode", "?code={0}");
+
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// enable Session for verification code
+app.UseSession(); 
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -13,13 +13,10 @@
 }
 
 /* Show it is fixed to the top */
-body {
-  min-height: 75rem;
-  padding-top: 4.5rem;
-}
 
-main {
-  margin-top: 130px;
+
+.page-content {
+  margin-top: 120px;
 }
 
 header {

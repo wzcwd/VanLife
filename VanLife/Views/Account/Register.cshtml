@@ -1,0 +1,66 @@
+@model VanLife.Models.ViewModel.Account.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+
+<style>
+    body {
+        background: url('@Url.Content("~/images/background.jpg")') no-repeat center center fixed;
+        background-size: cover;
+        
+    }
+    .form-signin {
+        background: rgba(255, 255, 255, 0.6); /* control transparency  */
+        padding: 2rem;
+        border-radius: 10px;
+        max-width: 500px;
+        margin: 15px auto;
+    }
+</style>
+
+
+
+<form asp-action="Register" asp-controller="Account" method="post" class="form-signin">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <antiforgery/>
+
+    <h1 class="h3 mb-3 fw-normal">Create an account</h1>
+
+    <div class="form-floating mb-3">
+        <input asp-for="Username" class="form-control" placeholder="Username"/>
+        <label asp-for="Username">Username</label>
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input asp-for="Email" class="form-control" placeholder="user@example.com"/>
+        <label asp-for="Email">Email</label>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input asp-for="Password" class="form-control" placeholder="Password"/>
+        <label asp-for="Password">Password</label>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password"/>
+        <label asp-for="ConfirmPassword">Confirm Password</label>
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+
+    <p class="mt-3 text-center">
+        Already have an account? <a asp-action="Login" asp-controller="Account">Login here</a>
+    </p>
+</form>
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

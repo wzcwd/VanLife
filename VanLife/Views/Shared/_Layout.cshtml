@@ -6,6 +6,7 @@
     <title>@ViewData["Title"] - VanLife</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/VanLife.styles.css" asp-append-version="true"/>
     <meta name="generator" content="Hugo 0.84.0">
@@ -13,84 +14,89 @@
 </head>
 
 <body>
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">VanLife</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav me-auto mb-4 mb-md-0">
-                <li class="nav-item">
-                    <a asp-action="Index" asp-controller="Home"
-                       class="nav-link @(ViewData["ActivePage"]?.ToString() == "Home" ? "active" : "")">Home
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a asp-action="ListAll" asp-controller="Housing"
-                       class="nav-link @(ViewData["ActivePage"]?.ToString() == "Housing" ? "active" : "")">Housing
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">Job</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">Pet-World</a>
-                </li>
-            </ul>
-            <div class="dropdown me-5">
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <!-- Login show username -->
-                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="userMenu"
-                            data-bs-toggle="dropdown" aria-expanded="false"> @User.Identity.Name
-                    </button>
-                    <ul class="dropdown-menu " aria-labelledby="userMenu">
-                        <li><a class="dropdown-item" href="@Url.Action("Profile", "Account")">Profile</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="@Url.Action("Logout", "Account")">Logout</a></li>
-                    </ul>
-                }
-                else
-                {
-                    <!-- If not login，shown Login-->
-                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="guestMenu"
-                            data-bs-toggle="dropdown" aria-expanded="false"> Login
-                    </button>
-                    <ul class="dropdown-menu " aria-labelledby="guestMenu">
-                        <li><a class="dropdown-item" href="@Url.Action("Login", "Account")">Sign In</a></li>
-                        <li><a class="dropdown-item" href="@Url.Action("Register", "Account")">Register</a></li>
-                    </ul>
-                }
+<main>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">VanLife</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-4 mb-md-0">
+                    <li class="nav-item">
+                        <a asp-action="Index" asp-controller="Home"
+                           class="nav-link @(ViewData["ActivePage"]?.ToString() == "Home" ? "active" : "")">Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-action="ListAll" asp-controller="Housing"
+                           class="nav-link @(ViewData["ActivePage"]?.ToString() == "Housing" ? "active" : "")">Housing
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">Job</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">Pet-World</a>
+                    </li>
+                </ul>
+                <div class="dropdown me-5">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <!-- Login show username -->
+                        <button class="btn btn-outline-light dropdown-toggle" type="button" id="userMenu"
+                                data-bs-toggle="dropdown" aria-expanded="false"> @User.Identity.Name
+                        </button>
+                        <ul class="dropdown-menu " aria-labelledby="userMenu">
+                            <li>
+                                <a asp-controller="Account" asp-action="UpdateAccount" class="dropdown-item">Account</a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form asp-action="Logout" asp-controller="Account" method="post"
+                                      class="dropdown-item p-0 m-0">
+                                    <antiforgery/>
+                                    <button type="submit" class="btn btn-dark text-center ms-1">Logout
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    }
+                    else
+                    {
+                        <!-- If not login，shown Login-->
+                        <a asp-action="Login" asp-controller="Account" class="btn btn-outline-light ">Login</a>
+                    }
+                </div>
             </div>
         </div>
-    </div>
-</nav>
-<header class="py-3 mt-5 border-bottom fixed-top bg-white ">
-    <div class="container d-flex align-items-center ">
-        <span class="text-dark text-nowrap fs-4"> Enjoy Your Life in Vancouver</span>
-        
-        <form asp-action="Search" method="get" class="w-50 ms-3 input-group">
-            <input type="search" class="form-control" name="searchString" placeholder="Search..."
-                   aria-label="Search">
-            <button type="submit" class="btn btn-secondary">Search</button>
-        </form>
-        
-        <a asp-action="SavePost" asp-controller="Post" class="btn btn-dark ms-3 text-nowrap">New Post</a>
-    </div>
-</header>
+    </nav>
+    <header class="py-3 mt-5 border-bottom fixed-top bg-white ">
+        <div class="container d-flex align-items-center ">
+            <span class="text-dark text-nowrap fs-4"> Enjoy Your Life in Vancouver</span>
 
-<div class="container">
-    <main role="main" class="pb-3">
+            <form asp-action="Search" method="get" class="w-50 ms-3 input-group">
+                <input type="search" class="form-control" name="searchString" placeholder="Search..."
+                       aria-label="Search">
+                <button type="submit" class="btn btn-secondary">Search</button>
+            </form>
+
+            <a asp-action="SavePost" asp-controller="Post" class="btn btn-dark ms-3 text-nowrap">New Post</a>
+        </div>
+    </header>
+
+
+    <!-- Page Content -->
+    <div class="page-content flex-grow-1 p-4 ">
         @RenderBody()
-    </main>
-</div>
+    </div>
 
 
-
+</main>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>

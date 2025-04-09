@@ -408,3 +408,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 .idea/
+
+# sentivity
+appsettings.Development.json
