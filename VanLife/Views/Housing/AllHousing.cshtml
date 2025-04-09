@@ -3,37 +3,40 @@
 @{
     ViewData["Title"] = "Housing";
 }
-<h3>@ViewData["Title"]</h3>
+<h4>@ViewData["Title"]</h4>
 
 <div class="container">
     <div class="row">
         @foreach (var post in Model)
         {
-            <div class="col-md-12 mb-4">
-                <div class="card d-flex flex-row">
+            <div class="col-md-12 mb-2">
+                <div class="card d-flex flex-row" style="height: 120px;" >
                     <!-- image -->
                     @if (post.Images?.Any() == true)
                     {
                         var firstImage = post.Images.First();
-                        <img class="card-img-left"  style="max-width: 150px; object-fit: cover"
+                        <img class="card-img-left"  style="width: 150px; object-fit: cover"
                              src="data:@firstImage.ContentType;base64,@firstImage.ImageString" alt="Post cover">
                     }
                     else
                     {
                         <!-- default image -->
                         <img src="/images/no-image.png" class="card-img-left" alt="No image"
-                             style="max-width: 150px; object-fit: cover;">
+                             style="width: 150px; object-fit: cover;">
                     }
                     
                     <!-- text -->
-                    <div class="card-body d-flex flex-column justify-content-between">
-                        <h7 class="card-title">
-                            <a href="@Url.Action("Details", "Housing", new { id = post.PostId })"
-                               class="text-decoration-none text-dark">
+                    <div class="card-body d-flex flex-column justify-content-between" style="line-height: 0.5;">
+                        <h5 class="card-title">
+                            <a href="@Url.Action("Details", "Housing", new { id = post.PostId })" class="text-decoration-none text-dark">
                                 @post.Title
                             </a>
-                        </h7>
-                        <p class="card-text">Price: $@Convert.ToInt32(post.Price)/Month</p>
+                        </h5>
+                        <p class="card-text text-muted">Posted by: @post.User.UserName</p>
+                        @if (post.Price > 0)
+                        {
+                            <p class="card-text">Price: $@Convert.ToInt32(post.Price)/@post.PriceUnit</p>
+                        }
                         <p class="card-text text-muted">Last Updated: @post.UpdatedAt.ToString("yyyy-MM-dd")</p>
                     </div>
                 </div>

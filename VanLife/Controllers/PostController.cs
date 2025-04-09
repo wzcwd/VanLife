@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using VanLife.Data;
 using VanLife.Models;
 using VanLife.Models.ViewModel;
+using VanLife.Utility;
 
 namespace VanLife.Controllers;
 
@@ -19,6 +21,8 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
             Post = new Post(),
             Categories = categories,
             Regions = regions,
+            SelectedPriceUnit = PriceUnit.Month,
+            PriceUnits = new SelectList(Enum.GetValues(typeof(PriceUnit)))
         };
         return View("PostForm", postViewModel);
     }
@@ -43,6 +47,8 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
         }
         
         var post = postViewModel.Post;
+        post.PriceUnit = postViewModel.SelectedPriceUnit;
+        
         // start transaction
         using var transaction = context.Database.BeginTransaction();
         
@@ -64,6 +70,7 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
             existingPost.Price = post.Price;
             existingPost.CategoryId = post.CategoryId;
             existingPost.RegionId = post.RegionId;
+            existingPost.PriceUnit = post.PriceUnit; // Added line
         }
         context.SaveChanges(); 
         

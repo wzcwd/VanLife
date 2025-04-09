@@ -1,25 +1,28 @@
 @model VanLife.Models.ViewModel.PostViewModel
 
 @{
-    ViewData["Title"] = "Add Post";
+    ViewData["Title"] = "Create new Post";
 }
 
-<h2>@ViewData["Title"]</h2>
+@using System.Security.Claims
 
-<form asp-action="SavePost" method="post" enctype="multipart/form-data">
+<h5>@ViewData["Title"]</h5>
+
+<form asp-action="SavePost" method="post" class="ms-3" enctype="multipart/form-data">
     <antiforgery/>
     <div asp-validation-summary="All" class="text-danger"></div>
-    @*TODO: only for test, make value =1 *@
-    <input type="hidden" asp-for="Post.UserId" value="1"/>
+    <input type="hidden" asp-for="Post.UserId" value="@(User.FindFirstValue(ClaimTypes.NameIdentifier))"/>
     <input type="hidden" asp-for="Post.PostId"/>
 
     <div class="form-group">
         <label asp-for="Post.Title">Title</label>
+        <span asp-validation-for="Post.Title" class="text-danger"></span>
         <input asp-for="Post.Title" class="form-control" required/>
     </div>
 
     <div class="form-group">
         <label asp-for="Post.CategoryId">Category</label>
+        <span asp-validation-for="Post.CategoryId" class="text-danger"></span>
         <select asp-for="Post.CategoryId" class="form-control"
                 asp-items="@(new SelectList(Model.Categories, "CategoryId", "CategoryName"))" required>
             <option value="">Please choose a category</option>
@@ -28,6 +31,7 @@
 
     <div class="form-group">
         <label asp-for="Post.RegionId">Location</label>
+        <span asp-validation-for="Post.RegionId" class="text-danger"></span>
         <select asp-for="Post.RegionId" class="form-control"
                 asp-items="@(new SelectList(Model.Regions, "RegionId", "Location"))" required>
             <option value="">Please choose a location</option>
@@ -35,13 +39,20 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="Post.Content"></label>
+        <label asp-for="Post.Content">Content</label>
+        <span asp-validation-for="Post.Content" class="text-danger"></span>
         <textarea asp-for="Post.Content" class="form-control" rows="5" required></textarea>
     </div>
 
     <div class="form-group">
-        <label asp-for="Post.Price"></label>
+        <label asp-for="Post.Price">Price</label>
         <input asp-for="Post.Price" type="number" step="0.01" class="form-control"/>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="SelectedPriceUnit">Price Unit</label>
+        <select asp-for="SelectedPriceUnit" class="form-control" asp-items="Model.PriceUnits">
+        </select>
     </div>
 
     <!-- upload images -->
@@ -69,4 +80,3 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
-

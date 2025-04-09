@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VanLife.Data;
 
@@ -10,9 +11,11 @@ using VanLife.Data;
 namespace VanLife.Migrations
 {
     [DbContext(typeof(VanLifeContext))]
-    partial class VanLifeContextModelSnapshot : ModelSnapshot
+    [Migration("20250409045749_UpdatePostModel")]
+    partial class UpdatePostModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
@@ -301,10 +304,7 @@ namespace VanLife.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PriceUnit")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("RegionId")
+                    b.Property<int?>("RegionId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
@@ -337,7 +337,6 @@ namespace VanLife.Migrations
                             Content = "Join our team for an exciting part-time opportunity in Coquitlam! Embrace the freedom of van life while contributing to a dynamic, flexible work environment. This position is perfect for those looking to balance work and adventure. ",
                             CreatedAt = new DateTime(2025, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Price = 25m,
-                            PriceUnit = 0,
                             RegionId = 6,
                             Title = "A part time position in Coquitlam ",
                             UpdatedAt = new DateTime(2025, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -350,7 +349,6 @@ namespace VanLife.Migrations
                             Content = "Looking for a new place to call home? Rent a cozy room in a beautiful house, perfect for individuals seeking a quiet and peaceful environment. Enjoy the convenience of a fully furnished space, including essential amenities such as high-speed internet, heating, and laundry facilities. The house is situated in a great location close to shops, parks, and transportation. Don't miss out on this opportunity to make this your next home!",
                             CreatedAt = new DateTime(2025, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Price = 1000m,
-                            PriceUnit = 0,
                             RegionId = 1,
                             Title = "A room for rent",
                             UpdatedAt = new DateTime(2025, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -363,7 +361,6 @@ namespace VanLife.Migrations
                             Content = "“Meet the best dog in the world! A loyal companion, always by your side, ready for every adventure. Whether you’re hiking, camping, or simply lounging at home, this dog is the perfect friend for any occasion. With their playful spirit and loving nature, they’ll bring joy to your life. Join us in celebrating the best furry friend you could ever ask for!”",
                             CreatedAt = new DateTime(2025, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Price = 0m,
-                            PriceUnit = 0,
                             RegionId = 2,
                             Title = "The best dog in the world!",
                             UpdatedAt = new DateTime(2025, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -589,9 +586,7 @@ namespace VanLife.Migrations
 
                     b.HasOne("VanLife.Models.Region", "Region")
                         .WithMany()
-                        .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RegionId");
 
                     b.HasOne("VanLife.Models.User", "User")
                         .WithMany()

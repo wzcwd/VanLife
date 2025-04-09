@@ -15,6 +15,7 @@ public class HousingController(ILogger<HousingController> logger, VanLifeContext
             .Where(p => p.CategoryId == CategoryConstant.HousingCategoryId)
             .OrderBy(p => p.UpdatedAt)
             .Include(p=> p.Images)
+            .Include(p => p.User)
             .ToPagedList(page, pageSize);
 
         ViewData["ActivePage"] = "Housing";

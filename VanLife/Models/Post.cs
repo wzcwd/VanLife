@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using VanLife.Utility;
 
 namespace VanLife.Models;
 
@@ -10,20 +11,23 @@ public class Post
     [Required]  
     public string UserId { get; set; }  // foreign key to Identity User
     
-    [Required]  
+    [Required(ErrorMessage = "Category is required")]  
     public int CategoryId { get; set; }  // foreign key
     
+    [Required(ErrorMessage = "Location is required")]  
     public int? RegionId { get; set; }  // foreign key
     
-    [Required]  
+    [Required(ErrorMessage = "Title is required")]  
     [StringLength(100, ErrorMessage = "Title cannot exceed 100 characters.")]
     public string Title { get; set; }
     
-    [Required] 
+    [Required(ErrorMessage = "Content is required")] 
     [StringLength(2000, ErrorMessage = "Content cannot exceed 2000 characters.")]
     public string Content { get; set; }
-    
-    public decimal? Price { get; set; }
+
+    public decimal Price { get; set; } = 0;
+
+    public PriceUnit PriceUnit { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime UpdatedAt { get; set; } = DateTime.Now;

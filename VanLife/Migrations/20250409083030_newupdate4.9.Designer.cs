@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VanLife.Data;
 
@@ -10,9 +11,11 @@ using VanLife.Data;
 namespace VanLife.Migrations
 {
     [DbContext(typeof(VanLifeContext))]
-    partial class VanLifeContextModelSnapshot : ModelSnapshot
+    [Migration("20250409083030_newupdate4.9")]
+    partial class newupdate49
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
