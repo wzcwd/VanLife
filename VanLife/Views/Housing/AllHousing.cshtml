@@ -10,12 +10,12 @@
         @foreach (var post in Model)
         {
             <div class="col-md-12 mb-2">
-                <div class="card d-flex flex-row" style="height: 120px;" >
+                <div class="card d-flex flex-row" style="height: 120px;">
                     <!-- image -->
                     @if (post.Images?.Any() == true)
                     {
                         var firstImage = post.Images.First();
-                        <img class="card-img-left"  style="width: 150px; object-fit: cover"
+                        <img class="card-img-left" style="width: 150px; object-fit: cover"
                              src="data:@firstImage.ContentType;base64,@firstImage.ImageString" alt="Post cover">
                     }
                     else
@@ -24,20 +24,24 @@
                         <img src="/images/no-image.png" class="card-img-left" alt="No image"
                              style="width: 150px; object-fit: cover;">
                     }
-                    
+
                     <!-- text -->
                     <div class="card-body d-flex flex-column justify-content-between" style="line-height: 0.5;">
                         <h5 class="card-title">
-                            <a href="@Url.Action("Details", "Housing", new { id = post.PostId })" class="text-decoration-none text-dark">
-                                @post.Title
+                            <a asp-controller="Post" asp-action="PostDetail" asp-route-id="@post.PostId"
+                               class="text-decoration-none text-dark"> @post.Title
                             </a>
                         </h5>
-                        <p class="card-text text-muted">Posted by: @post.User.UserName</p>
+                        <p> Posted by:
+                            <span class="text-decoration-underline mb-1">@post.User?.UserName</span>
+                        </p>
                         @if (post.Price > 0)
                         {
-                            <p class="card-text">Price: $@Convert.ToInt32(post.Price)/@post.PriceUnit</p>
+                            <p class="card-text fw-bold text-success fs-6">$@Convert.ToInt32(post.Price)/@post.PriceUnit</p>
                         }
-                        <p class="card-text text-muted">Last Updated: @post.UpdatedAt.ToString("yyyy-MM-dd")</p>
+                        <small class="text-muted fst-italic">
+                            Last Updated: @post.UpdatedAt.ToString("yyyy-MM-dd")
+                        </small>
                     </div>
                 </div>
             </div>

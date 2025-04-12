@@ -17,7 +17,7 @@
 <main>
     <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">VanLife</a>
+            <a asp-action="Index" asp-controller="Home" class="navbar-brand fw-bold">VanLife</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
                     aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -60,14 +60,14 @@
                         </a>
                     </li>
                 </ul>
-                <div class="dropdown me-5">
+                <div class="dropdown me-3">
                     @if (User.Identity.IsAuthenticated)
                     {
                         <!-- Login show username -->
                         <button class="btn btn-outline-light dropdown-toggle" type="button" id="userMenu"
                                 data-bs-toggle="dropdown" aria-expanded="false"> @User.Identity.Name
                         </button>
-                        <ul class="dropdown-menu " aria-labelledby="userMenu">
+                        <ul class="dropdown-menu dropdown-menu-lg-end dropdown-menu-sm-start" aria-labelledby="userMenu">
                             <li>
                                 <a asp-controller="Account" asp-action="UpdateAccount" class="dropdown-item">Account</a>
                             </li>
@@ -104,7 +104,7 @@
                 <button type="submit" class="btn btn-secondary">Search</button>
             </form>
 
-            <a asp-action="SavePost" asp-controller="Post" class="btn btn-dark ms-3 text-nowrap">New Post</a>
+            <a asp-action="SavePost" asp-controller="Post" class="btn btn-outline-dark ms-3 text-nowrap">New Post</a>
         </div>
     </header>
 

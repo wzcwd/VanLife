@@ -40,4 +40,7 @@ public class Post
     public User? User { get; set; }
     // one post for one region
     public Region? Region { get; set; }  
+    
+    // one post for one category
+    public Category? Category { get; set; }
 }

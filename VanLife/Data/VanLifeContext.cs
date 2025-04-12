@@ -22,9 +22,9 @@ public class VanLifeContext : IdentityDbContext<User>
         
         // Seeding initial Data
         modelBuilder.Entity<Category>().HasData(
-            new Category { CategoryId = 1, CategoryName = "job" },
-            new Category { CategoryId = 2, CategoryName = "housing" },
-            new Category { CategoryId = 3, CategoryName = "pet" }
+            new Category { CategoryId = 1, CategoryName = "Job" },
+            new Category { CategoryId = 2, CategoryName = "Housing" },
+            new Category { CategoryId = 3, CategoryName = "Pet" }
         );
         
         modelBuilder.Entity<Region>().HasData(

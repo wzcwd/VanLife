@@ -1,0 +1,124 @@
+@using System.Security.Claims
+@using VanLife.Constant
+@model VanLife.Models.Post
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+@if (Model.Images != null && Model.Images.Any())
+{
+    <div class="mb-3" style="width: 530px;">
+        <div id="postImageCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                @for (int i = 0; i < Model.Images.Count(); i++)
+                {
+                    <button type="button" data-bs-target="#postImageCarousel" data-bs-slide-to="@i"
+                            class="@(i == 0 ? "active" : null)" aria-current="@(i == 0 ? "true" : null)"
+                            aria-label="Slide @(i + 1)"></button>
+                }
+            </div>
+            <div class="carousel-inner">
+                @for (int i = 0; i < Model.Images.Count(); i++)
+                {
+                    var image = Model.Images.ElementAt(i);
+                    <div class="carousel-item @(i == 0 ? "active" : null)">
+                        <img src="data:@image.ContentType;base64,@image.ImageString"
+                             class="d-block w-100" style="height: 400px; object-fit: cover;"
+                             alt="Post image @(i + 1)"/>
+                    </div>
+                }
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#postImageCarousel"
+                    data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#postImageCarousel"
+                    data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+}
+
+<div class="mb-3">
+    <h4> @Model.Title</h4>
+</div>
+
+<div class="mb-3">
+    <strong>Posted by:</strong>
+    <span class="text-decoration-underline">@Model.User?.UserName</span> <br/>
+    <small class="text-muted fst-italic">
+        Last Updated: @Model.UpdatedAt.ToString("yyyy-MM-dd")
+    </small>
+</div>
+
+
+<div class="mb-3">
+    <strong>Region:</strong> @Model.Region?.Location
+</div>
+
+@if (Model.Price > 0)
+{
+    <div class="mb-3">
+        <strong>Price:</strong> $@Model.Price / @Model.PriceUnit
+    </div>
+}
+
+<div class="col-md-8">
+    <div class="card mb-3 shadow-sm">
+        <div class="card-header">
+            <strong>Detail</strong>
+        </div>
+        <div class="card-body">
+            <p class="card-text" style="white-space: pre-wrap;">@Model.Content</p>
+        </div>
+    </div>
+</div>
+
+@* Only the owner and the admin can see these buttons *@
+@{
+    var isOwner = Model.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var isAdmin = User.IsInRole(RoleConstant.Admin);
+    var canDelete = User.Identity?.IsAuthenticated == true && (isOwner || isAdmin);
+}
+
+@if (canDelete)
+{
+    <div class="d-flex">
+        <a asp-action="EditPost" asp-route-id="@Model.PostId" class="btn btn-outline-primary me-2">Edit</a>
+        <form asp-action="DeletePost" method="post" asp-route-id="@Model.PostId">
+            <antiforgery/>
+            <button type="submit" class="btn btn-outline-danger"
+                    onclick="return confirm('Are you sure to delete the post?');">Delete
+            </button>
+        </form>
+    </div>
+}
+@* --------------------------------------------------- *@
+
+
+
+
+<hr/>
+
+@if (Model.Comments != null && Model.Comments.Any())
+{
+    <div class="mt-4">
+        <h4>Comments</h4>
+        <ul class="list-group">
+            @foreach (var comment in Model.Comments)
+            {
+                <li class="list-group-item">
+                    <strong>@comment.User?.UserName:</strong> @comment.CommentContent
+                </li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <p class="text-muted">No comments yet.</p>
+}

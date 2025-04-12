@@ -1,7 +1,7 @@
 @model VanLife.Models.ViewModel.PostViewModel
 
 @{
-    ViewData["Title"] = "Create new Post";
+    ViewData["Title"] = (Model.Post.PostId == 0)? "Create Post" : "Edit Post"; 
 }
 
 @using System.Security.Claims
@@ -62,12 +62,7 @@
         <input type="file" class="form-control" id="imageUpload" name="images" multiple accept="image/*"/>
         <small class="form-text text-muted">Hold down Command (⌘) to select multiple files on MacOS.</small>
     </div>
-
-    @*<div>
-        <h4>Uploaded Image</h4>
-        <img src="@Url.Content(Model.ImagePath)" alt="Uploaded Image" class="img-fluid" />
-    </div>*@
-
+    
     <div class="d-flex mt-3">
         <button type="submit" class="btn btn-primary me-2" onclick="return confirm('Are you sure to submit ?')">Submit
         </button>

@@ -1,6 +1,6 @@
 namespace VanLife.Constant;
 
-public class CategoryConstant
+public static class CategoryConstant
 {
     public const int JobCategoryId = 1;
     public const int HousingCategoryId = 2;

@@ -164,17 +164,17 @@ namespace VanLife.Migrations
                         new
                         {
                             CategoryId = 1,
-                            CategoryName = "job"
+                            CategoryName = "Job"
                         },
                         new
                         {
                             CategoryId = 2,
-                            CategoryName = "housing"
+                            CategoryName = "Housing"
                         },
                         new
                         {
                             CategoryId = 3,
-                            CategoryName = "pet"
+                            CategoryName = "Pet"
                         });
                 });
 
@@ -581,7 +581,7 @@ namespace VanLife.Migrations
 
             modelBuilder.Entity("VanLife.Models.Post", b =>
                 {
-                    b.HasOne("VanLife.Models.Category", null)
+                    b.HasOne("VanLife.Models.Category", "Category")
                         .WithMany("Posts")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -598,6 +598,8 @@ namespace VanLife.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
 
                     b.Navigation("Region");
 
