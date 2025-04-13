@@ -56,7 +56,7 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult SavePost(PostViewModel postViewModel, List<IFormFile> images)
+    public IActionResult CreatePost(PostViewModel postViewModel, List<IFormFile> images)
     {
         if (!ModelState.IsValid)
         {
@@ -65,7 +65,6 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
             return View("PostForm", postViewModel);
         }
 
-        // maximum number pf image is 3
         if (images.Count > 3)
         {
             ModelState.AddModelError("Images", "Exceed the maximum number of images");
@@ -77,54 +76,61 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
         var post = postViewModel.Post;
         post.PriceUnit = postViewModel.SelectedPriceUnit;
 
-        // start transaction
         using var transaction = context.Database.BeginTransaction();
 
-        if (post.PostId == 0) // new post
-        {
-            context.Posts.Add(post);
-        }
-        else
-        {
-            // edit post
-            var existingPost = context.Posts
-                .Include(p => p.Images)
-                .FirstOrDefault(p => p.PostId == post.PostId);
-            if (existingPost == null)
-            {
-                return NotFound();
-            }
-            
-            int existingImageCount = existingPost.Images.Count;
-            
-            if (existingImageCount + images.Count > 3)
-            {
-                ModelState.AddModelError("Images", "Exceed the maximum number of images");
-                postViewModel.Categories = context.Categories.ToList();
-                postViewModel.Regions = context.Regions.ToList();
-                return View("PostForm", postViewModel);
-            }
+        context.Posts.Add(post);
+        context.SaveChanges(); // save post to get Post id to link images
 
-            existingPost.Title = post.Title;
-            existingPost.Content = post.Content;
-            existingPost.Price = post.Price;
-            existingPost.CategoryId = post.CategoryId;
-            existingPost.RegionId = post.RegionId;
-            existingPost.PriceUnit = post.PriceUnit;
-            
-            UploadImages(existingPost, images);
-        }
-
-        context.SaveChanges(); // it has to be saved to generate a post id for images to link
-
-        // deal with images
         UploadImages(post, images);
-
         context.SaveChanges();
-        // commit transaction
+
         transaction.Commit();
 
-        return RedirectToAction(nameof(Index), "Home");
+        return RedirectToAction(nameof(PostDetail), new { id = post.PostId });
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult EditPost(PostViewModel postViewModel, List<IFormFile> images)
+    {
+        if (!ModelState.IsValid)
+        {
+            postViewModel.Categories = context.Categories.ToList();
+            postViewModel.Regions = context.Regions.ToList();
+            return View("PostForm", postViewModel);
+        }
+
+        var post = postViewModel.Post;
+        var existingPost = context.Posts
+            .Include(p => p.Images)
+            .FirstOrDefault(p => p.PostId == post.PostId);
+
+        if (existingPost == null)
+        {
+            return NotFound();
+        }
+
+        int existingImageCount = existingPost.Images.Count;
+        if (existingImageCount + images.Count > 3)
+        {
+            ModelState.AddModelError("Images", "Exceed the maximum number of images");
+            postViewModel.Categories = context.Categories.ToList();
+            postViewModel.Regions = context.Regions.ToList();
+            return View("PostForm", postViewModel);
+        }
+
+        existingPost.Title = post.Title;
+        existingPost.Content = post.Content;
+        existingPost.Price = post.Price;
+        existingPost.CategoryId = post.CategoryId;
+        existingPost.RegionId = post.RegionId;
+        existingPost.PriceUnit = post.PriceUnit;
+
+        UploadImages(existingPost, images);
+        context.SaveChanges();
+
+        return RedirectToAction(nameof(PostDetail), new { id = existingPost.PostId });
     }
 
     private void UploadImages(Post post, List<IFormFile> images)
@@ -181,7 +187,7 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
         context.SaveChanges();
 
         
-        return RedirectToAction("EditPost", new { id = postId });
+        return RedirectToAction(nameof(EditPost), new { id = postId });
     }
 
 

@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = (Model.Post.PostId == 0) ? "Create Post" : "Edit Post";
+    Boolean isCreate = Model.Post.PostId == 0;
 }
 
 @using System.Security.Claims
@@ -35,7 +36,7 @@
 }
 <hr/>
 
-<form asp-action="SavePost" method="post" class="ms-3" enctype="multipart/form-data">
+<form asp-action="@(isCreate ? "CreatePost" : "EditPost")" method="post" class="ms-3" enctype="multipart/form-data">
     <antiforgery/>
     <div asp-validation-summary="All" class="text-danger"></div>
     <input type="hidden" asp-for="Post.UserId" value="@(User.FindFirstValue(ClaimTypes.NameIdentifier))"/>
