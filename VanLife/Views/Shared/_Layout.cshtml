@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using VanLife.Constant
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -31,18 +33,20 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a asp-action="ListAll" asp-controller="Housing"
-                           class="nav-link @(ViewData["ActivePage"]?.ToString() == "Housing" ? "active" : "")">
+                        <a asp-action="ListAll" asp-controller="Post"  asp-route-categoryId="@CategoryConstant.HousingCategoryId"
+                           class="me-2 nav-link @(ViewData["ActivePage"]?.ToString() == "Housing" ? "active" : "")">
                             <i class="bi bi-houses-fill"></i> Housing
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">
-                            <i class="bi bi-briefcase-fill"></i> Job
+                        <a asp-action="ListAll" asp-controller="Post"  asp-route-categoryId="@CategoryConstant.JobCategoryId"
+                           class="me-2 nav-link @(ViewData["ActivePage"]?.ToString() == "Job" ? "active" : "")">
+                            <i class="bi bi-houses-fill"></i> Job
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link " href="#" tabindex="-1" aria-disabled="true">
+                        <a asp-action="ListAll" asp-controller="Post"  asp-route-categoryId="@CategoryConstant.PetCategoryId"
+                           class="nav-link @(ViewData["ActivePage"]?.ToString() == "Pet" ? "active" : "")">
                             <svg xmlns="http://www.w3.org/2000/svg" height="15px" viewBox="0 -830 960 960" width="18px"
                                  fill="currentColor">
                                 <path d="M173.24-481.67q-39.24 0-66.24-27.09-27-27.09-27-66.33 0-39.24 27.09-66.24 27.1-27 
