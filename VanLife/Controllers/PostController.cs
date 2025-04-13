@@ -8,11 +8,36 @@ using VanLife.Data;
 using VanLife.Models;
 using VanLife.Models.ViewModel;
 using VanLife.Utility;
+using X.PagedList.Extensions;
 
 namespace VanLife.Controllers;
 
 public class PostController(ILogger<PostController> logger, VanLifeContext context) : Controller
 {
+    public IActionResult ListAll(int categoryId, int page = 1, int pageSize = 10)
+    {
+        logger.LogInformation("List all Post :{page} of page size {pageSize}: ", page, pageSize);
+        var posts = context.Posts
+            .Where(p => p.CategoryId == categoryId)
+            .OrderBy(p => p.UpdatedAt)
+            .Include(p=> p.Images)
+            .Include(p => p.User)
+            .ToPagedList(page, pageSize);
+        
+        string viewKey = categoryId switch
+        {
+            CategoryConstant.HousingCategoryId => "Housing",
+            CategoryConstant.JobCategoryId => "Job",
+            CategoryConstant.PetCategoryId => "Pet",
+            _ => categoryId.ToString()
+        };
+        
+        ViewData["ActivePage"] = viewKey;
+        ViewData["CategoryId"] = categoryId;
+        return View("AllCategory", posts);
+    }
+    
+    
     [Authorize]
     public IActionResult SavePost()
     {
@@ -20,8 +45,8 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
         var postViewModel = new PostViewModel
         {
             Post = new Post(),
-            Categories =  context.Categories.ToList(),
-            Regions =  context.Regions.ToList(),
+            Categories = context.Categories.ToList(),
+            Regions = context.Regions.ToList(),
             SelectedPriceUnit = PriceUnit.Month,
             PriceUnits = new SelectList(Enum.GetValues(typeof(PriceUnit)))
         };
@@ -62,10 +87,22 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
         else
         {
             // edit post
-            var existingPost = context.Posts.Find(post.PostId);
+            var existingPost = context.Posts
+                .Include(p => p.Images)
+                .FirstOrDefault(p => p.PostId == post.PostId);
             if (existingPost == null)
             {
                 return NotFound();
+            }
+            
+            int existingImageCount = existingPost.Images.Count;
+            
+            if (existingImageCount + images.Count > 3)
+            {
+                ModelState.AddModelError("Images", "Exceed the maximum number of images");
+                postViewModel.Categories = context.Categories.ToList();
+                postViewModel.Regions = context.Regions.ToList();
+                return View("PostForm", postViewModel);
             }
 
             existingPost.Title = post.Title;
@@ -73,10 +110,12 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
             existingPost.Price = post.Price;
             existingPost.CategoryId = post.CategoryId;
             existingPost.RegionId = post.RegionId;
-            existingPost.PriceUnit = post.PriceUnit; 
+            existingPost.PriceUnit = post.PriceUnit;
+            
+            UploadImages(existingPost, images);
         }
 
-        context.SaveChanges();
+        context.SaveChanges(); // it has to be saved to generate a post id for images to link
 
         // deal with images
         UploadImages(post, images);
@@ -87,12 +126,13 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
 
         return RedirectToAction(nameof(Index), "Home");
     }
-    
+
     private void UploadImages(Post post, List<IFormFile> images)
     {
         foreach (var image in images)
         {
-            logger.LogInformation("Processing image: {ImageName}, Size: {ImageSize} bytes", image.FileName, image.Length);
+            logger.LogInformation("Processing image: {ImageName}, Size: {ImageSize} bytes", image.FileName,
+                image.Length);
             if (image.Length > 0)
             {
                 using (var memoryStream = new MemoryStream())
@@ -110,6 +150,40 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
             }
         }
     }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteImage(int imageId, int postId)
+    {
+        // find the linked post
+        var post = context.Posts.Find(postId);
+        if (post == null)
+        {
+            return NotFound();
+        }
+
+        // only the owen and admin can delete the images
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole(RoleConstant.Admin);
+        if (post.UserId != currentUserId && !isAdmin)
+        {
+            return Forbid();
+        }
+
+        var image = context.Images.Find(imageId);
+        if (image == null)
+        {
+            return NotFound();
+        }
+        // delete the image
+        context.Images.Remove(image);
+        context.SaveChanges();
+
+        
+        return RedirectToAction("EditPost", new { id = postId });
+    }
+
 
     public IActionResult PostDetail(int id)
     {
@@ -163,7 +237,10 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
     {
         logger.LogInformation("EditPost: attempt to edit post {PostId}", id);
 
-        var post = context.Posts.Find(id);
+        var post = context.Posts
+            .Include(p => p.Images)
+            .FirstOrDefault(p => p.PostId == id);
+
         if (post == null)
         {
             return NotFound();

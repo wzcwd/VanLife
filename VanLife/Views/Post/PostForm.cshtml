@@ -1,12 +1,39 @@
 @model VanLife.Models.ViewModel.PostViewModel
 
 @{
-    ViewData["Title"] = (Model.Post.PostId == 0)? "Create Post" : "Edit Post"; 
+    ViewData["Title"] = (Model.Post.PostId == 0) ? "Create Post" : "Edit Post";
 }
 
 @using System.Security.Claims
 
 <h5>@ViewData["Title"]</h5>
+
+<!-- show images if it has -->
+@if (Model.Post.Images.Any())
+{
+    <div class="mb-3 ms-3">
+        <label class="form-label">Edit Images: </label>
+        <div class="d-flex flex-wrap gap-3">
+            @foreach (var image in Model.Post.Images)
+            {
+                <div class="position-relative">
+                    <img src="data:@image.ContentType;base64,@image.ImageString" alt="Post Image" class="rounded"
+                         style="width: 120px; height: 120px; object-fit: cover;"/>
+                    <!-- Delete image option -->
+                    <form asp-action="DeleteImage" method="post">
+                        <antiforgery/>
+                        <input type="hidden" name="imageId" value="@image.ImageId"/>
+                        <input type="hidden" name="postId" value="@Model.Post.PostId"/>
+                        <button type="submit" class="btn btn-danger btn-sm position-absolute top-0 end-0">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    </div>
+}
+<hr/>
 
 <form asp-action="SavePost" method="post" class="ms-3" enctype="multipart/form-data">
     <antiforgery/>
@@ -55,23 +82,28 @@
         </select>
     </div>
 
+
     <!-- upload images -->
     <div class="form-group">
-        <label for="imageUpload" class="form-label">Upload Image(Maximum 3 images):
-            The first image will be used as the cover image.</label>
+        <label for="imageUpload" class="form-label">Upload Image(Maximum 3 images)</label>
         <input type="file" class="form-control" id="imageUpload" name="images" multiple accept="image/*"/>
         <small class="form-text text-muted">Hold down Command (⌘) to select multiple files on MacOS.</small>
     </div>
-    
+
     <div class="d-flex mt-3">
-        <button type="submit" class="btn btn-primary me-2" onclick="return confirm('Are you sure to submit ?')">Submit
+        <button type="submit" class="btn btn-primary me-2" onclick="return confirm('Are you sure to submit ?')">
+            Submit
         </button>
         <a href="javascript:void(0);" onclick="window.history.back();" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
+
+
+
 
 @section Scripts{
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+
