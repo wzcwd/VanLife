@@ -14,16 +14,17 @@ namespace VanLife.Controllers;
 
 public class PostController(ILogger<PostController> logger, VanLifeContext context) : Controller
 {
-    public IActionResult ListAll(int categoryId, int page = 1, int pageSize = 10)
+    public IActionResult ListAll(int categoryId, int page = PagingConstant.DefaultPage,
+        int pageSize = PagingConstant.DefaultPageSize)
     {
         logger.LogInformation("List all Post :{page} of page size {pageSize}: ", page, pageSize);
         var posts = context.Posts
             .Where(p => p.CategoryId == categoryId)
-            .OrderBy(p => p.UpdatedAt)
-            .Include(p=> p.Images)
+            .OrderByDescending(p => p.UpdatedAt)
+            .Include(p => p.Images)
             .Include(p => p.User)
             .ToPagedList(page, pageSize);
-        
+
         string viewKey = categoryId switch
         {
             CategoryConstant.HousingCategoryId => "Housing",
@@ -31,13 +32,13 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
             CategoryConstant.PetCategoryId => "Pet",
             _ => categoryId.ToString()
         };
-        
+
         ViewData["ActivePage"] = viewKey;
         ViewData["CategoryId"] = categoryId;
         return View("AllCategory", posts);
     }
-    
-    
+
+
     [Authorize]
     public IActionResult SavePost()
     {
@@ -182,11 +183,12 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
         {
             return NotFound();
         }
+
         // delete the image
         context.Images.Remove(image);
         context.SaveChanges();
 
-        
+
         return RedirectToAction(nameof(EditPost), new { id = postId });
     }
 
@@ -269,5 +271,21 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
         };
 
         return View("PostForm", model);
+    }
+
+
+    [Authorize]
+    public IActionResult MyPost(int page = PagingConstant.DefaultPage, int pageSize = PagingConstant.DefaultPageSize)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        var posts = context.Posts
+            .Where(p => p.UserId == userId)
+            .OrderByDescending(p => p.UpdatedAt)
+            .Include(p => p.Images)
+            .Include(p => p.User)
+            .ToPagedList(page, pageSize);
+
+        return View("MyPost", posts);
     }
 }

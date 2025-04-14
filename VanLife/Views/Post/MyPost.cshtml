@@ -1,0 +1,76 @@
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Post>
+@{
+    ViewData["Title"] = "My Post";
+}
+<h4>@ViewData["Title"]</h4>
+
+<div class="container">
+    <div class="row">
+        @foreach (var post in Model)
+        {
+            <div class="col-md-12 mb-2">
+                <div class="card d-flex flex-row" style="height: 120px;">
+                    <!-- image -->
+                    @if (post.Images?.Any() == true)
+                    {
+                        var firstImage = post.Images.First();
+                        <a asp-controller="Post" asp-action="PostDetail" asp-route-id="@post.PostId">
+                            <img class="card-img" style="width: 150px; height: 100%; object-fit: cover; 
+                            display: block;" src="data:@firstImage.ContentType;base64,@firstImage.ImageString"
+                                 alt="Post cover">
+                        </a>
+                    }
+                    else
+                    {
+                        <!-- default image -->
+                        <a asp-controller="Post" asp-action="PostDetail" asp-route-id="@post.PostId">
+                            <img src="/images/no-image.png" class="card-img" alt="No image"
+                                 style="width: 150px; height: 100%; object-fit: cover; display: block;">
+                        </a>
+                    }
+
+                    <!-- text -->
+                    <div class="card-body d-flex flex-column justify-content-between" style="line-height: 0.5;">
+                        <h6 class="card-title">
+                            <a asp-controller="Post" asp-action="PostDetail" asp-route-id="@post.PostId"
+                               class="text-decoration-none text-dark ">
+                                @(post.Title.Length > 60 ? post.Title.Substring(0, 60) + "..." : post.Title)
+                            </a>
+                        </h6>
+                        <p> Posted by:
+                            <span class="text-decoration-underline mb-1">@post.User?.UserName</span>
+                        </p>
+                        @if (post.Price > 0)
+                        {
+                            <p class="card-text fw-bold text-success fs-6">
+                                $@Convert.ToInt32(post.Price)/@post.PriceUnit</p>
+                        }
+                        <small class="text-muted fst-italic">
+                            Last Updated: @post.UpdatedAt.ToString("yyyy-MM-dd")
+                        </small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+        @Html.PagedListPager(Model, page =>
+                Url.Action("MyPost", "Post", new { page }),
+            new PagedListRenderOptions
+            {
+                UlElementClasses = new[] { "pagination" },
+                LiElementClasses = new[] { "page-item" },
+                PageClasses = new[] { "page-link" },
+                LinkToPreviousPageFormat = "Prev",
+                LinkToNextPageFormat = "Next",
+                ActiveLiElementClass = "active",
+                DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+                MaximumPageNumbersToDisplay = 10,
+                DisplayLinkToPreviousPage = PagedListDisplayMode.IfNeeded
+            })
+    </div>
+</div>
+
