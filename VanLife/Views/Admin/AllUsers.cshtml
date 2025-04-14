@@ -1,0 +1,63 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<VanLife.Models.ViewModel.UserRolesViewModel>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="SearchUser" asp-controller="Admin" method="get" class="w-50 mb-3 input-group">
+    <input type="search" class="form-control" name="searchString" placeholder="Search by Email" aria-label="Search">
+    <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i></button>
+</form>
+
+<table class="table w-75 table-bordered table-striped table-sm text-center">
+    <thead>
+    <tr>
+        <th>User ID</th>
+        <th>User Name</th>
+        <th>Role</th>
+        <th>Email</th>
+        <th>Options</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.User.Id</td>
+            <td>@item.User.UserName</td>
+            <td>@string.Join(", ", item.RoleNames)</td>
+            <td>@item.User.Email</td>
+            <td>
+                <div class="d-flex justify-content-center">
+                    <a asp-action="Edit Roles" asp-route-id="@item.User.Id"
+                       class="btn btn-sm btn-warning text-nowrap me-2">Edit Roles</a>
+                    <form asp-action="DeleteUser" method="post" onsubmit="return confirm('Are you sure to delete?');">
+                        <input type="hidden" name="id" value="@item.User.Id"/>
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<!-- page -->
+<div class="d-flex  mt-4">
+    @Html.PagedListPager(Model, page => Url.Action("ListUsers", new { page }),
+        new PagedListRenderOptions
+        {
+            UlElementClasses = new[] { "pagination" },
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" },
+            LinkToPreviousPageFormat = "Prev",
+            LinkToNextPageFormat = "Next",
+            ActiveLiElementClass = "active",
+            DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+            MaximumPageNumbersToDisplay = 10,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.IfNeeded
+        })
+</div>
