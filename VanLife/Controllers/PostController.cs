@@ -127,6 +127,7 @@ public class PostController(ILogger<PostController> logger, VanLifeContext conte
         existingPost.CategoryId = post.CategoryId;
         existingPost.RegionId = post.RegionId;
         existingPost.PriceUnit = post.PriceUnit;
+        existingPost.UpdatedAt = DateTime.Now;
 
         UploadImages(existingPost, images);
         context.SaveChanges();
