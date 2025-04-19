@@ -12,6 +12,8 @@ VanLife enables users to create and upload posts related to these categories, of
 The system integrates robust authentication features using ASP.NET Core Identity, including user registration, login/logout, and account management. It also supports social media authentication via Google and Facebook, allowing users to sign in with their existing accounts.
 
 VanLife features a responsive user interface built with Bootstrap, ensuring optimal viewing and interaction across a wide range of screen sizes— from browsers to mobile devices.
+![VanLife Screenshot1](page1.png)
+![VanLife Screenshot2](page2.png)
 
 ## Features
 
