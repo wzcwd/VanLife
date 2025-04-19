@@ -1,0 +1,86 @@
+@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<VanLife.Models.ViewModel.UserRolesViewModel>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+<h2>@ViewData["Title"]</h2>
+
+@if (ViewData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @ViewData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<div class="d-flex gap-2 align-items-stretch mb-3">
+    <form asp-action="SearchUser" asp-controller="Admin" method="get" class="w-50  input-group">
+        <input type="search" class="form-control" name="email" placeholder="Search by Email" aria-label="Search">
+        <button type="submit" class="btn btn-secondary"><i class="bi bi-search"></i></button>
+    </form>
+
+    <a asp-action="ListUsers" class="btn btn-primary " >List All Users</a>
+</div>
+
+
+
+
+<table class="table w-75 table-bordered table-striped table-sm text-center small">
+    <thead>
+    <tr>
+        <th>User ID</th>
+        <th>User Name</th>
+        <th>Role</th>
+        <th>Email</th>
+        <th>Options</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.User.Id</td>
+            <td>@item.User.UserName</td>
+            <td>@string.Join(", ", item.RoleNames)</td>
+            <td>@item.User.Email</td>
+            <td>
+                <div class="d-flex gap-2 justify-content-center">
+                    <form asp-controller="Admin" asp-action="AssignAdmin" method="post" class="d-inline-block ">
+                        <antiforgery/>
+                        <input type="hidden" name="userId" value="@item.User.Id"/>
+                        <button type="submit" class="btn btn-sm btn-primary text-nowrap ">Set Admin</button>
+                    </form>
+                    <form asp-controller="Admin" asp-action="RemoveAdmin" method="post" class="d-inline-block ">
+                        <antiforgery/>
+                        <input type="hidden" name="userId" value="@item.User.Id"/>
+                        <button type="submit" class="btn btn-sm btn-warning text-nowrap">Remove Admin</button>
+                    </form>
+                    <form asp-action="DeleteUser" method="post" class="d-inline-block"
+                          onsubmit="return confirm('Are you sure to delete?');">
+                        <antiforgery/>
+                        <input type="hidden" name="userId" value="@item.User.Id"/>
+                        <button type="submit" class="btn btn-sm btn-danger text-nowrap">Delete</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<!-- page -->
+<div class="d-flex  mt-4">
+    @Html.PagedListPager(Model, page => Url.Action("ListUsers", new { page }),
+        new PagedListRenderOptions
+        {
+            UlElementClasses = new[] { "pagination" },
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" },
+            LinkToPreviousPageFormat = "Prev",
+            LinkToNextPageFormat = "Next",
+            ActiveLiElementClass = "active",
+            DisplayEllipsesWhenNotShowingAllPageNumbers = true,
+            MaximumPageNumbersToDisplay = 10,
+            DisplayLinkToPreviousPage = PagedListDisplayMode.IfNeeded
+        })
+</div>
