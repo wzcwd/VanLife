@@ -2,43 +2,94 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using VanLife.Constant;
-using VanLife.Data;
+using VanLife.Models;
 using VanLife.Models.ViewModel;
 using X.PagedList.Extensions;
 
 namespace VanLife.Controllers;
 
 [Authorize(Roles = "Admin")]
-public class AdminController(ILogger<HomeController> logger, VanLifeContext context) : Controller
+public class AdminController : Controller
 {
-    public IActionResult ListUsers(int page = PagingConstant.DefaultPage, int pageSize = PagingConstant.DefaultPageSize)
+    private readonly UserManager<User> _userManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly ILogger<AdminController> _logger;
+
+    public AdminController(ILogger<AdminController> logger, UserManager<User> userManager,
+        RoleManager<IdentityRole> roleManager)
     {
-        var users = context.Users.ToList();
+        _userManager = userManager;
+        _roleManager = roleManager;
 
-        var model = users.Select(u => new UserRolesViewModel
-        {
-            User = u,
-            RoleNames = (from ur in context.UserRoles
-                join r in context.Roles on ur.RoleId equals r.Id
-                where ur.UserId == u.Id
-                select r.Name).ToList()
-        }).ToPagedList(page, pageSize);
-
-        return View("AllUsers", model);
+        _logger = logger;
     }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken] 
-    public async Task<IActionResult> DeleteUser(string id)
+    public async Task<IActionResult> ListUsers(int page = PagingConstant.DefaultPage,
+        int pageSize = PagingConstant.DefaultPageSize)
     {
-        var user = await context.Users.FindAsync(id);
+        var users = _userManager.Users.ToList();
+
+        var model = new List<UserRolesViewModel>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            model.Add(new UserRolesViewModel
+            {
+                User = user,
+                RoleNames = roles.ToList()
+            });
+        }
+
+        var pagedModel = model.ToPagedList(page, pageSize);
+        return View("ListUsers", pagedModel);
+    }
+
+    public async Task<IActionResult> SearchUser(string email, int page = PagingConstant.DefaultPage,
+        int pageSize = PagingConstant.DefaultPageSize)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            ViewData["ErrorMessage"] = "Please enter an email address.";
+            return View("ListUsers", new List<UserRolesViewModel>().ToPagedList(page, pageSize));
+        }
+        
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            ViewData["ErrorMessage"] = "No user is found.";
+            return View("ListUsers", new List<UserRolesViewModel>().ToPagedList(page, pageSize));
+        }
+
+        var model = new List<UserRolesViewModel>();
+
+        var roles = await _userManager.GetRolesAsync(user);
+        model.Add(new UserRolesViewModel
+        {
+            User = user,
+            RoleNames = roles.ToList()
+        });
+
+        var pagedModel = model.ToPagedList(page, pageSize);
+        return View("ListUsers", pagedModel);
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteUser(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
             return NotFound();
         }
 
-        context.Users.Remove(user);
-        await context.SaveChangesAsync();
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+        {
+            return BadRequest("Failed to delete user.");
+        }
 
         return RedirectToAction(nameof(ListUsers));
     }
@@ -47,48 +98,46 @@ public class AdminController(ILogger<HomeController> logger, VanLifeContext cont
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoveAdmin(string userId)
     {
-        var user = await context.Users.FindAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
             return NotFound();
         }
 
-        var adminRole = context.Roles.FirstOrDefault(r => r.Name == "Admin");
-        if (adminRole != null)
+        if (!await _roleManager.RoleExistsAsync("Admin"))
         {
-            var userRole = context.UserRoles.FirstOrDefault(ur => ur.UserId == user.Id && ur.RoleId == adminRole.Id);
-            if (userRole != null)
-            {
-                context.UserRoles.Remove(userRole);
-                await context.SaveChangesAsync();
-            }
+            throw new InvalidOperationException("Admin role does not exist.");
+        }
+
+        if (await _userManager.IsInRoleAsync(user, "Admin"))
+        {
+            await _userManager.RemoveFromRoleAsync(user, "Admin");
         }
 
         return RedirectToAction(nameof(ListUsers));
     }
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AssignAdmin(string userId)
     {
-        var user = await context.Users.FindAsync(userId);
+        var user = await _userManager.FindByIdAsync(userId);
         if (user == null)
         {
             return NotFound();
         }
 
-        var adminRole = context.Roles.FirstOrDefault(r => r.Name == "Admin");
-        if (adminRole != null)
+        if (!await _roleManager.RoleExistsAsync("Admin"))
         {
-            var exists = context.UserRoles.Any(ur => ur.UserId == user.Id && ur.RoleId == adminRole.Id);
-            if (!exists)
-            {
-                context.UserRoles.Add(new IdentityUserRole<string> { UserId = user.Id, RoleId = adminRole.Id });
-                await context.SaveChangesAsync();
-            }
+            throw new InvalidOperationException("Admin role does not exist.");
+        }
+
+        if (!await _userManager.IsInRoleAsync(user, "Admin"))
+        {
+            await _userManager.AddToRoleAsync(user, "Admin");
         }
 
         return RedirectToAction(nameof(ListUsers));
     }
-    
 }
