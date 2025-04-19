@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VanLife.Constant;
 using VanLife.Data;
-using VanLife.Models;
 using VanLife.Models.ViewModel;
 using X.PagedList.Extensions;
 
@@ -15,7 +14,7 @@ public class HomeController(ILogger<HomeController> logger, VanLifeContext conte
     public IActionResult Index()
     {
         ViewData["ActivePage"] = "Home";
-        return View();
+        return ListLatest();
     }
 
     public IActionResult SearchAll(string searchString, int categoryId, int page = PagingConstant.DefaultPage,
@@ -34,7 +33,18 @@ public class HomeController(ILogger<HomeController> logger, VanLifeContext conte
 
         return View("SearchResult", posts);
     }
-
+    public IActionResult ListLatest()
+    {
+        var posts = context.Posts
+            .OrderByDescending(p => p.CreatedAt)
+            .Include(p => p.Images)
+            .Include(p => p.User)
+            .Take(3)
+            .ToList();
+        
+        return View("Index", posts);
+    }
+    
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
