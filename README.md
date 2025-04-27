@@ -13,16 +13,12 @@ The system integrates robust authentication features using ASP.NET Core Identity
 
 VanLife features a responsive user interface built with Bootstrap, ensuring optimal viewing and interaction across a wide range of screen sizes— from browsers to mobile devices.
 ![VanLife Screenshot1](page1.png)
+***
 ![VanLife Screenshot2](page2.png)
-
-## Features
-
-- **Responsive Design** 
-- **Post Management** 
-- **Social Media Authentication**
-- **Global Exception Handling**
-- **Comment System** (Coming Soon)
-- **User Registration and Identity Management**
+***
+![VanLife Screenshot3](page3.png)
+***
+<img src="page4.png" alt="VanLife Screenshot4" width="400"/>
 
 ## Technologies Used
 
@@ -55,20 +51,8 @@ The project is developed using the following technologies:
    ```sh
    dotnet run --launch-profile https
    ```
-## 3. Updating the Database
 
-If you make changes to the database models, follow these steps:
-1. **Add a new migration:**
-   ```sh
-   dotnet ef migrations add UpdateDatabase
-   ```
-2. **Apply the migration to update the database:**
-   
-   ```sh
-   dotnet ef database update
-   ```
-
-## 4. Social Media Authentication Setup
+## 3. Social Media Authentication Setup
 
 To test Google and Facebook login, add the following configuration to your `appsettings.Development.json` file:
 
@@ -87,15 +71,7 @@ To test Google and Facebook login, add the following configuration to your `apps
 Replace the placeholders with your actual id and secret
 
 
-Alternatively, You can use the .NET Secret Manager to securely store your credentials during development:
-
-```sh
-dotnet user-secrets set "Authentication:Google:ClientId" "<your-client-id>"
-dotnet user-secrets set "Authentication:Google:ClientSecret" "<your-client-secret>"
-dotnet user-secrets set "Authentication:Facebook:AppId" "<your-app-id>"
-dotnet user-secrets set "Authentication:Facebook:AppSecret" "<your-app-secret>"
-```
-## 5. Email Service Setup
+## 4. Email Service Setup
 
 To test email sending functionality using SendGrid, add the following configuration to your `appsettings.Development.json` file:
 
